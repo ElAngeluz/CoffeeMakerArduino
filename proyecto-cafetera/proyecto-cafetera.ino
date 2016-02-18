@@ -9,8 +9,8 @@
 #include "ESP8266.h"
 #include <SoftwareSerial.h>
 
-#define SSID        "CTI_DOMO"
-#define PASSWORD    "ct1esp0l15"
+#define SSID        "Nexxt_0714E8"       //"CTI_DOMO"
+#define PASSWORD    "S3c0D3P0ll0"  // "ct1esp0l15"
 #define HOST_NAME   "api.thingspeak.com"
 #define HOST_PORT   80
 
@@ -55,7 +55,15 @@ void setup()
 void loop()
 {
   static int relayVal = 0;
-  int cmd = getOn_Off_State();
+
+  int sensorValue = analogRead(A5);
+  // print out the value you read:
+  Serial.println(sensorValue);
+  delay(100);  
+  
+  /*int cmd = getOn_Off_State();
+
+  
   Serial.print("ESTADO" +cmd);
     switch (cmd)
     {
@@ -67,7 +75,7 @@ void loop()
       {
         digitalWrite(RELAY_PIN, LOW);
       }
-    }
+    }*/
 }
 
 int getOn_Off_State(){
