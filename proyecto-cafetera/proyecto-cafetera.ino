@@ -18,23 +18,16 @@ static const TempUnit SCALE=CELSIUS;  // Options are CELSIUS, FAHRENHEIT
 
 IRTemp irTemp(PIN_ACQUIRE, PIN_CLOCK, PIN_DATA);
 
-#define SSID      "CTI_DOMO"  //"Nexxt_0714E8"       
-#define PASSWORD   "ct1esp0l15"// "S3c0D3P0ll0"  // 
+#define SSID     "Nexxt_0714E8" //"CTI_DOMO"  //   "moncayo CNT"    
+#define PASSWORD   "S3c0D3P0ll0"//"ct1esp0l15"//   // "0912671898"
 #define HOST_NAME   "api.thingspeak.com"
 #define HOST_PORT   80
-#define BUFFSIZE 1024
-
-char bufferIn[BUFFSIZE];
 
 //El modulo ESP8266 usa SoftwareSerial...
 SoftwareSerial mySerial(3,2); /* RX:D2, TX:D3 */
 ESP8266 wifi(mySerial);
 
 #define RELAY_PIN 8
-String key = "JOXZJ0MWXKS66ENR"; //Key proporcionado por ThingSpeak
-String keyRead="U8ECQVX029PA96RK"; //key de solo lectura por ThingSpeak
-String head = "GET /update?api_key=";
-String tail = " HTTP/1.0\r\n\r\n";
  String estadOn_Off="";
 int estadoProximidad=0;
 float irTemperature=0;
@@ -51,6 +44,7 @@ void setup()
       
     while(!wifi.setOprToStation()) {
        Serial.print("to station + softap err\r\n");
+       delay(1000);
     }
     Serial.print("to station + softap ok\r\n");
  
@@ -61,11 +55,11 @@ void setup()
     Serial.print("IP:");
     Serial.println( wifi.getLocalIP().c_str());    
     
-    if (wifi.disableMUX()) {
-        Serial.print("single ok\r\n");
-    } else {
-        Serial.print("single err\r\n");
-    }
+    while(!wifi.enableMUX()) {
+        Serial.print("multiple error\r\n");
+        delay(1000);
+    } 
+    Serial.print("multiple ok\r\n");
     
     Serial.print("setup end\r\n");
 }
@@ -74,7 +68,6 @@ void loop()
 {
   static int relayVal = 0;
   getOn_Off_State();
-  delay(1000);
   //Proximity
   int sensorValue = analogRead(A5);
   // print out the value you read:
@@ -108,7 +101,10 @@ void loop()
     {
     case '1':
       {
+        if(estadoProximidad==1 && irTemperature<90)
         digitalWrite(RELAY_PIN, HIGH);
+        else
+        digitalWrite(RELAY_PIN, LOW);
         Serial.println("estado 1");
         break;    
       }
@@ -125,49 +121,75 @@ void loop()
         }
     }
     estadOn_Off="";
+    delay(500);
      sendDatos();
 }
 
-void sendDatos(void){
-    uint8_t buffer[128] = {0};
+void sendDatos(){
     String field3 = "&field3=";
     String field2="&field2=";
-    String mensaje= head+key+field2+String(irTemperature,2)+field3+ String(estadoProximidad) +tail;
-    Serial.println(mensaje);
+    String mensaje= "GET http://api.thingspeak.com/update?api_key=JOXZJ0MWXKS66ENR"+field2+String(irTemperature,2)+field3+ String(estadoProximidad)+"HTTP/1.0\r\n\r\n\r\n";
+    //Serial.println(mensaje);
     
-    if (wifi.createTCP(HOST_NAME, HOST_PORT)) {
-        Serial.print("create tcp ok\r\n");
-    } else {
-        Serial.print("create tcp err\r\n");
+   String cmd = "AT+CIPSTART=2,\"TCP\",\"";  //make this command: AT+CPISTART="TCP","146.227.57.195",80
+    cmd += HOST_NAME;
+    cmd += "\",80";
+  
+    mySerial.println(cmd);  //send command to device
+    //mySerial.println("AT+ CIPMUX=1");
+      delay(5000);  //wait a little while for 'Linked' response - this makes a difference
+    if(mySerial.find("Linked"))  //message returned when connection established WEAK SPOT!! DOESN'T ALWAYS CONNECT
+    {
+      Serial.print("Connected to server for data at ");  //debug message
+      Serial.println(HOST_NAME);
     }
-
-    const char *cmd= mensaje.c_str();
-    wifi.send((const uint8_t*)cmd, strlen(cmd));
-
-    uint32_t len = wifi.recv(buffer, sizeof(buffer), 1000);
-    if (len > 0) {
-        Serial.print("Received:[");
-        for(uint32_t i = 0; i < len; i++) {
-            Serial.print((char)buffer[i]);
-        }
-        Serial.print("]\r\n");
+    else
+    {
+      Serial.println("'Linked' response not received");  //weak spot! Need to recover elegantly
     }
+    
+       Serial.print(mensaje);
+     
+     //send 
+     mySerial.print("AT+CIPSEND=2,");
+     mySerial.println(mensaje.length());
 
-    if (wifi.releaseTCP()) {
-        Serial.print("release tcp ok\r\n");
-    } else {
-        Serial.print("release tcp err\r\n");
+  if(mySerial.find(">"))    //prompt offered by esp8266
+  {
+    //Serial.println("found > prompt - issuing GET request");  //a debug message 
+    mySerial.println(mensaje);
+    
+  }
+  else
+  {
+      //doesn't seem to work here?
+    Serial.println("No '>' prompt received after AT+CPISEND");
+  }
+
+  if (mySerial.find("Status")) //get the date line from the http header (for example)
+  {
+    for (int i=0;i<30;i++)  //this should capture the 'Date: ' line from the header
+    {
+      if (mySerial.available())  //new cahracters received?
+      {
+        char c=mySerial.read();
+         Serial.write(c);
+      }else i--;  //if not, keep going round loop until we've got all the characters
     }
+    
+  }
+  mySerial.println("AT+CIPCLOSE");
     delay(15000);
   }
 
 void getOn_Off_State(void){
- String cmd = "AT+CIPSTART=\"TCP\",\"";  //make this command: AT+CPISTART="TCP","146.227.57.195",80
+ String cmd = "AT+CIPSTART=1,\"TCP\",\"";  //make this command: AT+CPISTART="TCP","146.227.57.195",80
   cmd += HOST_NAME;
   cmd += "\",80";
 
   mySerial.println(cmd);  //send command to device
-    delay(2000);  //wait a little while for 'Linked' response - this makes a difference
+     // mySerial.println("AT+ CIPMUX=1");
+    delay(5000);  //wait a little while for 'Linked' response - this makes a difference
   if(mySerial.find("Linked"))  //message returned when connection established WEAK SPOT!! DOESN'T ALWAYS CONNECT
   {
     Serial.print("Connected to server at ");  //debug message
@@ -183,7 +205,7 @@ void getOn_Off_State(void){
        Serial.print(sendcommand);
      
      //send 
-     mySerial.print("AT+CIPSEND=");
+     mySerial.print("AT+CIPSEND=1,");
      mySerial.println(sendcommand.length());
 
   if(mySerial.find(">"))    //prompt offered by esp8266
@@ -212,10 +234,8 @@ void getOn_Off_State(void){
     }
     
   }
-  Serial.print("Estado: "+estadOn_Off);
   mySerial.println("AT+CIPCLOSE");
   delay(5000);
-
   }
 
   
