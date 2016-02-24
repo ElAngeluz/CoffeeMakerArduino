@@ -1,11 +1,3 @@
-// Maurice Ribble 
-// 4-6-2008
-// http://www.glacialwanderer.com/hobbyrobotics
-
-// This code just lets you turn a digital out pin on and off.  That's
-// all that is needed to verify a relay curcuit is working.
-// Press the space bar to toggle the relay on and off.
-#include <Bridge.h>
 #include "ESP8266.h"
 #include <SoftwareSerial.h>
 #include "IRTemp.h"
@@ -18,8 +10,8 @@ static const TempUnit SCALE=CELSIUS;  // Options are CELSIUS, FAHRENHEIT
 
 IRTemp irTemp(PIN_ACQUIRE, PIN_CLOCK, PIN_DATA);
 
-#define SSID     "Nexxt_0714E8" //"CTI_DOMO"  //   "moncayo CNT"    
-#define PASSWORD   "S3c0D3P0ll0"//"ct1esp0l15"//   // "0912671898"
+#define SSID   "Nexxt_0714E8"   //  "CTI_DOMO"  //   "moncayo CNT"    
+#define PASSWORD  "S3c0D3P0ll0" //   "ct1esp0l15"//   // "0912671898"
 #define HOST_NAME   "api.thingspeak.com"
 #define HOST_PORT   80
 
@@ -31,7 +23,10 @@ ESP8266 wifi(mySerial);
  String estadOn_Off="";
 int estadoProximidad=0;
 float irTemperature=0;
-
+enum estados {
+  A,B,C,D
+};
+estados estado=A;
 void setup()
 {
   pinMode(RELAY_PIN, OUTPUT);
@@ -67,7 +62,6 @@ void setup()
 void loop()
 {
   static int relayVal = 0;
-  getOn_Off_State();
   //Proximity
   int sensorValue = analogRead(A5);
   // print out the value you read:
@@ -83,46 +77,67 @@ void loop()
   float ambientTemperature = irTemp.getAmbientTemperature(SCALE);
   printTemperature("Ambient", ambientTemperature);
 
-  delay(100);
+  if(sensorValue<=930){
+    estadoProximidad=1;
+    
+  }else{
+      estadoProximidad=0;
+    }
 
-    if(sensorValue<=930){
-      estadoProximidad=1;
-      
-      }else{
-        estadoProximidad=0;
-      }
+  delay(10);
  
     //Serial.print("Estado: "+estadOn_Off);
     Serial.print("VEr estado:");
-    Serial.println(estadOn_Off[0]);
-    char estado=estadOn_Off[0];
+    Serial.println(String(estado));
       
     switch (estado)
     {
-    case '1':
+    case A:
       {
-        if(estadoProximidad==1 && irTemperature<90)
-        digitalWrite(RELAY_PIN, HIGH);
-        else
         digitalWrite(RELAY_PIN, LOW);
-        Serial.println("estado 1");
+        getOn_Off_State();
+        Serial.println("estado A");
         break;    
       }
-    case '0':
-      {
-        digitalWrite(RELAY_PIN, LOW);
-        Serial.println("Estado 0");
+    case B:
+      {         
+        if(estadoProximidad==1)
+          estado=C;
+          else
+          estado=B;
+
+        Serial.println("estado B");
         break;
       }
-      default:
+    case C:
       {
-        Serial.println(" MALO");
-        break;
+        if(irTemperature<=90)
+          estado=D;
+        else{
+          estado=B;
+          digitalWrite(RELAY_PIN, LOW);
         }
+
+        Serial.println("estado C");
+        break;
+      }
+     case D:
+      {
+        digitalWrite(RELAY_PIN, HIGH);
+        sendDatos();
+        if(estadoProximidad!=1 || irTemperature>=90)
+          estado=A;
+        else
+          estado=D;
+
+        Serial.println("estado D");
+        break;
+      }
+
+    
     }
     estadOn_Off="";
-    delay(500);
-     sendDatos();
+    delay(100);
 }
 
 void sendDatos(){
@@ -234,7 +249,13 @@ void getOn_Off_State(void){
     }
     
   }
-  mySerial.println("AT+CIPCLOSE");
+  char estadoVER=estadOn_Off[0];
+  if(estadoVER=='1')
+    estado=B;
+    else
+    estado=A;
+  
+  mySerial.print("AT+CIPCLOSE");
   delay(5000);
   }
 
