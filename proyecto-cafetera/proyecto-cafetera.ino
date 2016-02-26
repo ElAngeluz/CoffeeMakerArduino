@@ -24,7 +24,7 @@ ESP8266 wifi(mySerial);
 int estadoProximidad=0;
 float irTemperature=0;
 enum estados {
-  A,B,C,D
+  A,B,C,D,E
 };
 estados estado=A;
 void setup()
@@ -100,11 +100,20 @@ void loop()
         break;    
       }
     case B:
-      {         
+      {
+        if(sensorValue<=930){
+          estadoProximidad=1;
+          
+        }else{
+            estadoProximidad=0;
+          }         
         if(estadoProximidad==1)
           estado=C;
-          else
-          estado=B;
+          else{
+            estado=B;
+            digitalWrite(RELAY_PIN, LOW);
+            sendDatos();
+          }
 
         Serial.println("estado B");
         break;
@@ -114,8 +123,9 @@ void loop()
         if(irTemperature<=90)
           estado=D;
         else{
-          estado=B;
+          estado=C;
           digitalWrite(RELAY_PIN, LOW);
+          sendDatos();
         }
 
         Serial.println("estado C");
@@ -124,17 +134,17 @@ void loop()
      case D:
       {
         digitalWrite(RELAY_PIN, HIGH);
+        estado=E;
         sendDatos();
-        if(estadoProximidad!=1 || irTemperature>=90)
-          estado=A;
-        else
-          estado=D;
-
         Serial.println("estado D");
         break;
       }
-
-    
+    case E:
+      {
+        Serial.println("estado E");
+        getOn_Off_State();
+        break; 
+      }
     }
     estadOn_Off="";
     delay(100);
