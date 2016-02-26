@@ -2,6 +2,7 @@
 #include <SoftwareSerial.h>
 #include "IRTemp.h"
 
+// Pines de conexión para el sensor de temperatura
 static const byte PIN_DATA    = 4; // Choose any pins you like for these
 static const byte PIN_CLOCK   = 5;
 static const byte PIN_ACQUIRE = 6;
@@ -19,14 +20,17 @@ IRTemp irTemp(PIN_ACQUIRE, PIN_CLOCK, PIN_DATA);
 SoftwareSerial mySerial(3,2); /* RX:D2, TX:D3 */
 ESP8266 wifi(mySerial);
 
-#define RELAY_PIN 8
+#define RELAY_PIN 8 // Pin de comunicacion entre el Relay y arduino
  String estadOn_Off="";
 int estadoProximidad=0;
 float irTemperature=0;
+
+//Definicion de la estructura para la maquina de estado
 enum estados {
   A,B,C,D,E
 };
 estados estado=A;
+
 void setup()
 {
   pinMode(RELAY_PIN, OUTPUT);
@@ -89,7 +93,8 @@ void loop()
     //Serial.print("Estado: "+estadOn_Off);
     Serial.print("VEr estado:");
     Serial.println(String(estado));
-      
+
+  //Maquina de estados:
     switch (estado)
     {
     case A:
@@ -106,7 +111,8 @@ void loop()
           
         }else{
             estadoProximidad=0;
-          }         
+          } 
+                  
         if(estadoProximidad==1)
           estado=C;
           else{
@@ -150,6 +156,7 @@ void loop()
     delay(100);
 }
 
+//Funcion que envía datos hacia el ThingSpeak, el de la temperatura y de proximidad.
 void sendDatos(){
     String field3 = "&field3=";
     String field2="&field2=";
@@ -206,7 +213,8 @@ void sendDatos(){
   mySerial.println("AT+CIPCLOSE");
     delay(15000);
   }
-
+  
+// Lectura del estado de prendido o apagado de la cafetera desde ThingSpeak
 void getOn_Off_State(void){
  String cmd = "AT+CIPSTART=1,\"TCP\",\"";  //make this command: AT+CPISTART="TCP","146.227.57.195",80
   cmd += HOST_NAME;
@@ -269,7 +277,7 @@ void getOn_Off_State(void){
   delay(5000);
   }
 
-  
+//Para el debug, función que permite ver la temperatura en C o F  
 void printTemperature(
   char  *type,
   float  temperature) {
