@@ -11,8 +11,8 @@ static const TempUnit SCALE=CELSIUS;  // Options are CELSIUS, FAHRENHEIT
 
 IRTemp irTemp(PIN_ACQUIRE, PIN_CLOCK, PIN_DATA);
 
-#define SSID   "Nexxt_0714E8"   //  "CTI_DOMO"  //   "moncayo CNT"    
-#define PASSWORD  "S3c0D3P0ll0" //   "ct1esp0l15"//   // "0912671898"
+#define SSID  "moncayo CNT"     //  "CTI_DOMO"  //    "Nexxt_0714E8"  
+#define PASSWORD "0912671898"  //   "ct1esp0l15"//   // "S3c0D3P0ll0"
 #define HOST_NAME   "api.thingspeak.com"
 #define HOST_PORT   80
 
@@ -112,11 +112,11 @@ void loop()
         }else{
             estadoProximidad=0;
           } 
-                  
+                 
         if(estadoProximidad==1)
           estado=C;
-          else{
-            estado=B;
+         else{
+            estado=A;
             digitalWrite(RELAY_PIN, LOW);
             sendDatos();
           }
@@ -129,7 +129,7 @@ void loop()
         if(irTemperature<=90)
           estado=D;
         else{
-          estado=C;
+          estado=A;
           digitalWrite(RELAY_PIN, LOW);
           sendDatos();
         }
