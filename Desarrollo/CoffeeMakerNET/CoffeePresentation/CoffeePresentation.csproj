@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProjectGuid>{60238f1f-544c-4e12-818b-9028d40642c3}</ProjectGuid>
+    <ProjectGuid>{0affb479-5d64-4417-b5f1-a543ab9bae0d}</ProjectGuid>
     <OutputType>AppContainerExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CoffeMaker</RootNamespace>
-    <AssemblyName>CoffeMaker</AssemblyName>
+    <RootNamespace>CoffeePresentation</RootNamespace>
+    <AssemblyName>CoffeePresentation</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
@@ -17,7 +17,7 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     
-    <PackageCertificateKeyFile>CoffeMaker_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>CoffeePresentation_TemporaryKey.pfx</PackageCertificateKeyFile>
     
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
@@ -107,7 +107,7 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     
-    <None Include="CoffeMaker_TemporaryKey.pfx" />
+    <None Include="CoffeePresentation_TemporaryKey.pfx" />
     
   </ItemGroup>
   <ItemGroup>

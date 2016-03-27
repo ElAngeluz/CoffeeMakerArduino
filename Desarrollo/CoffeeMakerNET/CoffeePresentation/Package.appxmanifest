@@ -7,14 +7,14 @@
   IgnorableNamespaces="uap mp">
 
   <Identity
-    Name="5673b921-b41b-4237-8f66-2eda35c2cea4"
+    Name="c19c239d-6042-41fd-b905-48dd3976be33"
     Publisher="CN=Abel"
     Version="1.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="5673b921-b41b-4237-8f66-2eda35c2cea4" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="c19c239d-6042-41fd-b905-48dd3976be33" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>CoffeMaker</DisplayName>
+    <DisplayName>CoffeePresentation</DisplayName>
     <PublisherDisplayName>Abel</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -30,12 +30,12 @@
   <Applications>
     <Application Id="App"
       Executable="$targetnametoken$.exe"
-      EntryPoint="CoffeMaker.App">
+      EntryPoint="CoffeePresentation.App">
       <uap:VisualElements
-        DisplayName="CoffeMaker"
+        DisplayName="CoffeePresentation"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png"
-        Description="CoffeMaker"
+        Description="CoffeePresentation"
         BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"/>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
