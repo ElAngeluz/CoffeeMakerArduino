@@ -14,6 +14,8 @@ namespace CoffeeMaker
 {
     public partial class Program
     {
+
+        #region Variables
         private const string DOMAIN = "Gadgeteer";
         private const string CLIENTID = "CoffeeMaker"; //this is the device id for the broker to use
         private const string DEVICEID = "device1";
@@ -54,6 +56,7 @@ namespace CoffeeMaker
         DigitalOutput salida = null;
 
         double Proximidad;
+#endregion
 
         // This method is run when the mainboard is powered up or reset.   
         void ProgramStarted()

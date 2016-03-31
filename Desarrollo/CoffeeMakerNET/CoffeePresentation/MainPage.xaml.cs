@@ -17,7 +17,7 @@ namespace CoffeePresentation
         private const string DEVICEID = "device1";
 
         private const string COFFEECONTROL = "cmd/Coffee";
-        private const string DEVICESTATUS = "W10Satus";
+        private const string DEVICESTATUS = "Status/W10Satus";
 
         private const string BROKER = "m10.cloudmqtt.com";
         private const int PORT = 21001;
@@ -38,7 +38,6 @@ namespace CoffeePresentation
         {
             InitializeComponent();
             _mqttclient = new MqttClient(BROKER, PORT, false, MqttSslProtocols.SSLv3);
-            _mqttclient.MqttMsgPublished += _mqttclient_MqttMsgPublished;
             if (_mqttclient.IsConnected)
             {
 
@@ -53,11 +52,6 @@ namespace CoffeePresentation
                     _mqttclient.Publish(mqttDeviceStatus, Encoding.UTF8.GetBytes("online"), 2, true);
                 }
             }
-        }
-
-        private void _mqttclient_MqttMsgPublished(object sender, uPLibrary.Networking.M2Mqtt.Messages.MqttMsgPublishedEventArgs e)
-        {
-
         }
 
         private void OnButton_Click(object sender, RoutedEventArgs e)
