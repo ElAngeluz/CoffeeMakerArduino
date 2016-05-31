@@ -28,9 +28,18 @@
         <ImageView
             android:layout_width="75dp"
             android:layout_height="62dp"
-            android:id="@+id/imageView2"
+            android:id="@+id/Proximidad"
+            android:src="@drawable/uncheck"
             android:layout_gravity="left|center_vertical"
             android:contentDescription="@string/sensorproximidad" />
+
+        <TextView android:text="@string/mensaje" android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/company"
+            android:padding="100dp"
+            android:layout_gravity="left|center_vertical"
+            android:layout_centerHorizontal="true"/>
+
 
     </FrameLayout>
 
