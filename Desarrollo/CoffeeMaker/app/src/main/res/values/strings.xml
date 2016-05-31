@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">CoffeeMaker</string>
+    <string name="sensorproximidad">SensorProximidad</string>
+    <string name="temperaturaCafe">temperaturaCafe</string>
+    <string name="help">Ayuda</string>
+    <string name="conectar">Conectar</string>
+    <string name="encendido">Encender</string>
+</resources>
