@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "cti.com.coffeemaker"
-        minSdkVersion 17
+        minSdkVersion 19
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -17,19 +17,36 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    defaultConfig {
+        multiDexEnabled true
+    }
+    dexOptions {
+        preDexLibraries = false
+        javaMaxHeapSize "4g"
+    }
+    /*configurations {
+        all*.exclude group: 'com.android.support', module: 'support-v4'
+    }*/
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
 }
 
 repositories {
-    maven {
-        url "https://repo.eclipse.org/content/repositories/paho-releases/"
-    }
+    maven
+        {
+            url "https://repo.eclipse.org/content/repositories/paho-releases/"
+        }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.4.0'
-    compile('org.eclipse.paho:org.eclipse.paho.android.service:1.0.2') {
-        exclude module: 'support-v4'
-    }
+    compile 'org.eclipse.paho:org.eclipse.paho.android.service:1.0.2'
+    compile files('libs/org.eclipse.paho.client.mqttv3-1.1.1-20160614.041418-3.jar')
+   //compile files('libs/commons-lang3-3.3.2.jar')
+    compile 'com.android.support:multidex:1.0.1'
 }

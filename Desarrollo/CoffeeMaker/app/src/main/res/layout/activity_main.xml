@@ -7,7 +7,8 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="cti.com.coffeemaker.MainActivity">
+    tools:context="cti.com.coffeemaker.MainActivity"
+    android:background="@android:color/white">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -15,30 +16,25 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:id="@+id/frameLayout">
+        android:id="@+id/frameLayout"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentLeft="true">
 
         <ImageView
             android:layout_width="350dp"
             android:layout_height="350dp"
-            android:id="@+id/imageView"
+            android:id="@+id/ImagenCafe"
             android:layout_gravity="center"
             android:src="@drawable/desconectada"
             android:contentDescription="@string/temperaturaCafe" />
 
         <ImageView
-            android:layout_width="75dp"
-            android:layout_height="62dp"
-            android:id="@+id/Proximidad"
+            android:layout_width="96dp"
+            android:layout_height="80dp"
+            android:id="@+id/ImagenCheck"
             android:src="@drawable/uncheck"
             android:layout_gravity="left|center_vertical"
             android:contentDescription="@string/sensorproximidad" />
-
-        <TextView android:text="@string/mensaje" android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/company"
-            android:padding="100dp"
-            android:layout_gravity="left|center_vertical"
-            android:layout_centerHorizontal="true"/>
 
 
     </FrameLayout>
@@ -49,14 +45,30 @@
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/frameLayout">
 
-         <Switch
+        <Switch
             android:layout_width="300dp"
             android:layout_height="90dp"
             android:text="@string/encendido"
-             android:textSize="30dp"
+            android:textSize="30sp"
             android:id="@+id/Encendida"
             android:layout_gravity="center"
-             android:padding="5dp"
-             android:textStyle="bold" />
+            android:padding="5dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="291dp"
+            android:layout_height="100dp"
+            android:id="@+id/TextMensaje"
+            android:contentDescription="@string/mensajeapp"
+            android:layout_gravity="center_horizontal|top"
+            android:textSize="28sp"
+            android:textIsSelectable="false" />
+
+        <TextView
+            android:layout_width="291dp"
+            android:layout_height="100dp"
+            android:id="@+id/TextConeccion"
+            android:contentDescription="@string/mensajeapp"
+            android:layout_gravity="right|bottom" />
     </FrameLayout>
 </RelativeLayout>
