@@ -4,7 +4,7 @@
 
 #define PIN_ENABLE_ESP 13
 #define SSID  "LabProto"
-#define PASS  "protocti2016"
+#define PASS  "password"
 
 ESP esp(&Serial1, &Serial, PIN_ENABLE_ESP);
 MQTT mqtt(&esp);
