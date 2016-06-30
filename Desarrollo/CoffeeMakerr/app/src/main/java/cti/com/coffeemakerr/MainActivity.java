@@ -38,8 +38,8 @@ public class MainActivity extends AppCompatActivity {
     MqttAndroidClient mqttAndroidClient;
     MqttConnectOptions mqttConnectOptions;
 
-    private static final String USERNAME = "Username";
-    private final String PASSWORD = "Password";
+    private static final String USERNAME = "Prototipado";
+    private final String PASSWORD = "password";
     final String BROKER = "tcp://m10.cloudmqtt.com:18485";
 
     final String readyMessage = "ready";
@@ -51,7 +51,8 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean ready = false;
     private boolean appConectada = true;
-    private double Tempera=0;
+    private boolean cafeEncendida = false;
+    private int Tempera=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,12 +79,12 @@ public class MainActivity extends AppCompatActivity {
                             publishMessage(_TOPCAFETERA,"off");
                     }else{
                         publishMessage(_TOPCAFETERA,readyMessage);
-                        txtMensaje.setText("Cafetera aun no esta lista, si aun no ha puesto la taza, pongala por favor.");
-                        addToHistory("Estamos haciendo revisiones tecnicas, espere un momento por favor");
+                        txtMensaje.setText("Cafetera aún no está lista, si no ha puesto la taza, pongala por favor.");
+                        addToHistory("Estamos haciendo revisiones técnicas, espere un momento por favor");
                         swEncender.setChecked(false);
                     }
                 }else{
-                    addToHistory("Necesita conectar la aplicacion al servidor");
+                    addToHistory("Necesita conectar la aplicación al servidor");
                     swEncender.setChecked(false);
                 }
             }
@@ -113,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void connectionLost(Throwable cause) {
                 addToHistory(cause.toString());
-                txtConeccion.setText("La aplicacion se ha desconectado del servidor");
+                txtConeccion.setText("La aplicación se ha desconectado del servidor");
                 cafeteraNoLista();
             }
 
@@ -137,26 +138,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void SetTemperatura(MqttMessage _Message) {
-        Tempera = parseDouble(_Message.toString());
-        txtMensaje.setText("Taza lista. La temperatura del cafe es: " + Tempera + " °C");
+        Tempera = (int)(parseDouble(_Message.toString()) + 0.5d);
+        txtMensaje.setText("Taza lista. La temperatura del café es: " + Tempera + " °C");
         if (Tempera <30)
             PicCafe.setImageResource(R.drawable.frio);
-        else if(Tempera >= 30 && Tempera<40)
+        else if(Tempera >= 30 && Tempera<45)
             PicCafe.setImageResource(R.drawable.enfriandose);
-        else if(Tempera >= 40 && Tempera<50)
+        else if(Tempera >= 45 && Tempera<65)
             PicCafe.setImageResource(R.drawable.mediocalentandose);
-        else if(Tempera >= 50)
+        else if(Tempera >= 65)
             PicCafe.setImageResource(R.drawable.caliente);
     }
 
     private void CafeteraEstado(MqttMessage message) {
         if (message.toString().equalsIgnoreCase("on")){
+            cafeEncendida = true;
             swEncender.setChecked(true);
             cafeteraLista();
         }else if (message.toString().equalsIgnoreCase("off")) {
+            cafeEncendida = false;
             swEncender.setChecked(false);
             cafeteraNoLista();
-            txtMensaje.setText("La cafetera esta Apagada");
+            txtMensaje.setText("La cafetera está Apagada");
+            publishMessage(_TOPCAFETERA,readyMessage);
         }
     }
 
@@ -172,12 +176,16 @@ public class MainActivity extends AppCompatActivity {
             addToHistory("Taza removida");
             swEncender.setChecked(false);
         }
-        else cafeteraLista();
+        else {
+            cafeteraLista();
+            if (cafeEncendida)
+                swEncender.setChecked(true);
+        }
     }
 
     private void CafeteraEncendida(MqttMessage message) {
         if (message.toString().equalsIgnoreCase("conectada")){
-            txtMensaje.setText("La cafetera esta conectada, estamos verificando que todo este listo para el café");
+            txtMensaje.setText("La cafetera está conectada, estamos verificando que todo este listo para el café");
             publishMessage(_TOPPROX,readyMessage);
         }
     }
@@ -216,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void Ayuda() {
-        addToHistory("En la siguiente version se va actualizar este módulo");
+        addToHistory("En la siguiente versión se va actualizar este módulo");
     }
 
     private void conectar() {
@@ -232,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
                     disconnectedBufferOptions.setDeleteOldestMessages(false);
                     mqttAndroidClient.setBufferOpts(disconnectedBufferOptions);
 
-                    txtConeccion.setText("La Aplicacion ha sido conectada con el servidor");
+                    txtConeccion.setText("La Aplicación ha sido conectada con el servidor");
 
                     subscribeTopics();
                 }
@@ -279,7 +287,6 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-
                 }
             });
         } catch (MqttException e) {
