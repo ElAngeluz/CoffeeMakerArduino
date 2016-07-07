@@ -1,8 +1,7 @@
 package cti.com.coffeemakerr;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -12,12 +11,10 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-//mqtt
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -27,19 +24,20 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import static java.lang.Double.parseDouble;
 
+//mqtt
+
 public class MainActivity extends AppCompatActivity {
 
     private Switch swEncender;
     private ImageView PicCafe;
-    private ImageView PicMensaje;
+    private ImageView PicServer;
     private TextView txtMensaje;
-    private TextView txtConeccion;
 
     MqttAndroidClient mqttAndroidClient;
     MqttConnectOptions mqttConnectOptions;
 
     private static final String USERNAME = "Prototipado";
-    private final String PASSWORD = "password";
+    private final String PASSWORD = "S9i6r3pmQWME";
     final String BROKER = "tcp://m10.cloudmqtt.com:18485";
 
     final String readyMessage = "ready";
@@ -59,13 +57,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //referencio a los controles
         PicCafe = (ImageView) findViewById(R.id.ImagenCafe);
-        PicMensaje = (ImageView) findViewById(R.id.ImagenCheck);
+        PicServer = (ImageView) findViewById(R.id.ImagenServer);
         swEncender = (Switch) findViewById(R.id.Encendida);
         txtMensaje = (TextView) findViewById(R.id.TextMensaje);
-        txtConeccion = (TextView) findViewById(R.id.TextConeccion);
-
-        txtConeccion.setText("La Aplicación no ha sido conectada con el servidor");
 
         swEncender.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -79,16 +75,18 @@ public class MainActivity extends AppCompatActivity {
                             publishMessage(_TOPCAFETERA,"off");
                     }else{
                         publishMessage(_TOPCAFETERA,readyMessage);
-                        txtMensaje.setText("Cafetera aún no está lista, si no ha puesto la taza, pongala por favor.");
-                        addToHistory("Estamos haciendo revisiones técnicas, espere un momento por favor");
+                        txtMensaje.setText("Coffee maker is not ready, put the coffee pot if it is removed");
+                        addToHistory("Is checking. Wait please");
                         swEncender.setChecked(false);
                     }
                 }else{
-                    addToHistory("Necesita conectar la aplicación al servidor");
+                    addToHistory("You need to connected tha app to server");
                     swEncender.setChecked(false);
                 }
             }
         });
+
+        PicServer.setImageResource(R.drawable.reddisconn);
 
         final String clientId = MqttClient.generateClientId();
         mqttAndroidClient = new MqttAndroidClient(getApplicationContext(), BROKER, clientId);
@@ -106,15 +104,14 @@ public class MainActivity extends AppCompatActivity {
                 if (reconnect) {
                     // Because Clean Session is true, we need to re-subscribe
                     subscribeTopics();
-                } else {
-
+                    PicServer.setImageResource(R.drawable.redconn);
                 }
             }
 
             @Override
             public void connectionLost(Throwable cause) {
                 addToHistory(cause.toString());
-                txtConeccion.setText("La aplicación se ha desconectado del servidor");
+                PicServer.setImageResource(R.drawable.reddisconn);
                 cafeteraNoLista();
             }
 
@@ -132,14 +129,13 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void deliveryComplete(IMqttDeliveryToken token) {
-
             }
         });
     }
 
     private void SetTemperatura(MqttMessage _Message) {
         Tempera = (int)(parseDouble(_Message.toString()) + 0.5d);
-        txtMensaje.setText("Taza lista. La temperatura del café es: " + Tempera + " °C");
+        txtMensaje.setText("Coffee's temperature: " + Tempera + " °C");
         if (Tempera <30)
             PicCafe.setImageResource(R.drawable.frio);
         else if(Tempera >= 30 && Tempera<45)
@@ -159,13 +155,13 @@ public class MainActivity extends AppCompatActivity {
             cafeEncendida = false;
             swEncender.setChecked(false);
             cafeteraNoLista();
-            txtMensaje.setText("La cafetera está Apagada");
+            txtMensaje.setText("Coffee Maker off");
             publishMessage(_TOPCAFETERA,readyMessage);
         }
     }
 
     private void cafeteraLista(){
-        PicMensaje.setImageResource(R.drawable.check);
+
         ready = true;
     }
 
@@ -173,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
         if ( Integer.parseInt(message.toString()) == 0)
         {
             cafeteraNoLista();
-            addToHistory("Taza removida");
+            addToHistory("Coffee pot Remove");
             swEncender.setChecked(false);
         }
         else {
@@ -185,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void CafeteraEncendida(MqttMessage message) {
         if (message.toString().equalsIgnoreCase("conectada")){
-            txtMensaje.setText("La cafetera está conectada, estamos verificando que todo este listo para el café");
+            txtMensaje.setText("The Coffee maker is connected, put the coffee pot if it is removed");
             publishMessage(_TOPPROX,readyMessage);
         }
     }
@@ -224,7 +220,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void Ayuda() {
-        addToHistory("En la siguiente versión se va actualizar este módulo");
+        addToHistory("The next version will update this module");
     }
 
     private void conectar() {
@@ -240,7 +236,7 @@ public class MainActivity extends AppCompatActivity {
                     disconnectedBufferOptions.setDeleteOldestMessages(false);
                     mqttAndroidClient.setBufferOpts(disconnectedBufferOptions);
 
-                    txtConeccion.setText("La Aplicación ha sido conectada con el servidor");
+                    PicServer.setImageResource(R.drawable.redconn);
 
                     subscribeTopics();
                 }
@@ -263,12 +259,12 @@ public class MainActivity extends AppCompatActivity {
             mqttAndroidClient.subscribe(subscriptionTopic, 0, null, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
-                    addToHistory("Suscrito a: " + subscriptionTopic);
+                    addToHistory("Subscribe to: " + subscriptionTopic);
                 }
 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    addToHistory("fallo Suscrito a: " + subscriptionTopic);
+                    addToHistory("fail subscribe to: " + subscriptionTopic);
                 }
             });
         } catch (MqttException ex){
@@ -282,7 +278,7 @@ public class MainActivity extends AppCompatActivity {
             mqttAndroidClient.unsubscribe(unSubscriptionTopic, null, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
-                    addToHistory("ya no esta suscrito a: "+ unSubscriptionTopic);
+                    addToHistory("Unsubscribe to: "+ unSubscriptionTopic);
                 }
 
                 @Override
@@ -302,7 +298,7 @@ public class MainActivity extends AppCompatActivity {
             mqttAndroidClient.publish(TOPIC, message);
             if(!mqttAndroidClient.isConnected()){
                 //code for no connected
-                addToHistory("No se ha conectado");
+                addToHistory("fail to Connected");
             }
         } catch (MqttException e) {
             System.err.println("Error Publishing: " + e.getMessage());
@@ -312,7 +308,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void cafeteraNoLista() {
         unSubscribeToTopic(_TOPTEMPERATURA);
-        PicMensaje.setImageResource(R.drawable.uncheck);
         PicCafe.setImageResource(R.drawable.desconectada);
         ready = false;
     }
