@@ -1,3 +1,4 @@
+//codigo para arduino uno
 #include <SoftwareSerial.h>
 #include <espduino.h>
 #include <mqtt.h>

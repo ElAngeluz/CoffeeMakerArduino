@@ -1,6 +1,5 @@
 // This #include statement was automatically added by the Particle IDE.
-
-// This #include statement was automatically added by the Particle IDE.
+// codigo para photon - particle
 #include "IRTemp.h"
 #include "MQTT/MQTT.h"
 
