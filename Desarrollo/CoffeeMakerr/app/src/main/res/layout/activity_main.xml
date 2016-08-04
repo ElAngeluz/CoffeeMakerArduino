@@ -28,14 +28,6 @@
             android:src="@drawable/desconectada"
             android:contentDescription="@string/temperaturaCafe" />
 
-        <ImageView
-            android:layout_width="96dp"
-            android:layout_height="80dp"
-            android:id="@+id/ImagenCheck"
-            android:src="@drawable/uncheck"
-            android:layout_gravity="left|center_vertical"
-            android:contentDescription="@string/sensorproximidad" />
-
 
     </FrameLayout>
 
@@ -45,33 +37,33 @@
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/frameLayout">
 
+        <Switch
+            android:layout_width="300dp"
+            android:layout_height="36dp"
+            android:text="@string/encendido"
+            android:textSize="20sp"
+            android:id="@+id/Encendida"
+            android:layout_gravity="center"
+            android:textStyle="bold" />
+
         <TextView
-            android:layout_width="643dp"
-            android:layout_height="145dp"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
             android:id="@+id/TextMensaje"
             android:contentDescription="@string/mensajeapp"
             android:layout_gravity="center_horizontal|top"
-            android:textSize="28sp"
+            android:textSize="22dp"
             android:textIsSelectable="false"
             android:autoText="false"
             android:gravity="top"
             android:singleLine="false" />
 
-        <TextView
-            android:layout_width="291dp"
-            android:layout_height="100dp"
-            android:id="@+id/TextConeccion"
-            android:contentDescription="@string/mensajeapp"
-            android:layout_gravity="right|bottom" />
-
-        <Switch
-            android:layout_width="300dp"
-            android:layout_height="90dp"
-            android:text="@string/encendido"
-            android:textSize="30sp"
-            android:id="@+id/Encendida"
-            android:layout_gravity="center"
-            android:padding="5dp"
-            android:textStyle="bold" />
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/ImagenServer"
+            android:layout_gravity="right|bottom"
+            android:contentDescription="@string/imagenserver"
+            android:src="@drawable/reddisconn" />
     </FrameLayout>
 </RelativeLayout>
