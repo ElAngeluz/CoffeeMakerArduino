@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="cti.com.coffeemakerr.MainActivity"
+    android:background="@android:color/white">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/frameLayout"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentLeft="true">
+
+        <ImageView
+            android:layout_width="350dp"
+            android:layout_height="350dp"
+            android:id="@+id/ImagenCafe"
+            android:layout_gravity="center"
+            android:src="@drawable/desconectada"
+            android:contentDescription="@string/temperaturaCafe" />
+
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/frameLayout">
+
+        <Switch
+            android:layout_width="300dp"
+            android:layout_height="36dp"
+            android:text="@string/encendido"
+            android:textSize="20sp"
+            android:id="@+id/Encendida"
+            android:layout_gravity="center"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:id="@+id/TextMensaje"
+            android:contentDescription="@string/mensajeapp"
+            android:layout_gravity="center_horizontal|top"
+            android:textSize="22dp"
+            android:textIsSelectable="false"
+            android:autoText="false"
+            android:gravity="top"
+            android:singleLine="false" />
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/ImagenServer"
+            android:layout_gravity="right|bottom"
+            android:contentDescription="@string/imagenserver"
+            android:src="@drawable/reddisconn" />
+    </FrameLayout>
+</RelativeLayout>

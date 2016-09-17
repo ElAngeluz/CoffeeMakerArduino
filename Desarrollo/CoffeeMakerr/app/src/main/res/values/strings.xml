@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name"> CTI - Coffee Maker</string>
+    <string name="sensorproximidad">SensorProximidad</string>
+    <string name="temperaturaCafe">temperaturaCafe</string>
+    <string name="help">Help</string>
+    <string name="conectar">Connect</string>
+    <string name="encendido">Switch On</string>
+    <string name="mensaje">No Conectada</string>
+    <string name="title_activity_publisher">Title</string>
+    <string name="mensajeapp">Mensaje</string>
+    <string name="imagenserver">ImagenServer</string>
+</resources>

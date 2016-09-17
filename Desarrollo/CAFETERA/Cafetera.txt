@@ -1,0 +1,122 @@
+// This #include statement was automatically added by the Particle IDE.
+// codigo para photon - particle
+#include "IRTemp.h"
+#include "MQTT/MQTT.h"
+
+//setup Wifi
+#define SSID        "LabProto"
+#define PASSWORD    "password"
+#define IDDevice    ID
+
+//setup in/out 
+#define PROX_SENSOR_PIN D3
+#define RELAY_PIN D4
+static const byte PIN_DATA    = D7;
+static const byte PIN_CLOCK   = D6;
+static const byte PIN_ACQUIRE = D5;
+static const TempUnit SCALE=CELSIUS;
+
+//setup mqtt
+#define Broker "m10.cloudmqtt.com"
+#define Port 18485
+#define UserName "username"
+#define Password "password"
+
+//topic
+#define TOPESTADOCAFETERA "/onoff"
+#define TOPTEMPERATURA "/temp/ir"
+#define TOPPROX "/prox"
+#define TOPCAFETERA "/cafetera"
+
+//setup Initial
+IRTemp irTemp(PIN_ACQUIRE, PIN_CLOCK, PIN_DATA);
+unsigned long demora;
+float irTemperature;
+
+//setup Prox
+int sensorValue = 0;
+int olDsensorValue = 0; 
+int estadoProximidad = 0;
+
+
+void callback(char* topic, byte* payload, unsigned int length);
+
+/**
+ * if want to use IP address,
+ * byte server[] = { XXX,XXX,XXX,XXX };
+ * MQTT client(server, 1883, callback);
+ * want to use domain name,
+ * MQTT client("www.sample.com", 1883, callback);
+ **/
+ // This #include statement was automatically added by the Particle IDE.
+
+MQTT client(Broker, Port, callback);
+
+void callback(char* topic, byte* payload, unsigned int length) {
+    char p[length + 1];
+    memcpy(p, payload, length);
+    p[length] = NULL;
+    String message(p);
+    String topic2=String(topic);
+    
+    if (topic2.equalsIgnoreCase("/prox"))    
+        if (message.equalsIgnoreCase("ready"))
+            SensorProximidad();
+    else if (topic2.equalsIgnoreCase(TOPCAFETERA)){  
+        if (message.equals("on")){
+          digitalWrite(RELAY_PIN,HIGH); 
+          client.publish(TOPESTADOCAFETERA,"on");
+        }else if (message.equalsIgnoreCase("off")){
+          digitalWrite(RELAY_PIN,LOW);
+          client.publish(TOPESTADOCAFETERA,"off");
+        }else if (message.equalsIgnoreCase("ready"))
+          client.publish(TOPCAFETERA,"conectada");
+        else if (message.equalsIgnoreCase("readytaza"))
+          SensorProximidad();
+    }
+    Serial.println(message);  
+}
+
+void setup() {
+    Serial.begin(9600);
+    WiFi.setCredentials(SSID, PASSWORD);
+    WiFi.connect();
+    Serial.println(WiFi.localIP());
+    // connect to the server
+    client.connect("cafetera",UserName,Password);
+    // publish/subscribe
+    if (client.isConnected()) {
+        Serial.println("Connected");
+        client.subscribe(TOPPROX);
+        client.subscribe(TOPCAFETERA);
+        
+    }
+    pinMode(RELAY_PIN,OUTPUT);
+    pinMode(PROX_SENSOR_PIN, INPUT);
+    Particle.publish("cafetera","conectada",60,PRIVATE);
+}
+
+void loop() {
+    if (client.isConnected()){
+        client.loop();
+        irTemperature = irTemp.getIRTemperature(SCALE);
+        demora = millis();
+        if(demora % 9==0)
+            client.publish(TOPTEMPERATURA,String(irTemperature));
+        SensorProximidad();
+    }
+}
+
+void SensorProximidad()
+{
+  sensorValue = digitalRead(PROX_SENSOR_PIN);
+  
+  if (sensorValue == 1 && olDsensorValue == 0){
+    client.publish(TOPPROX, "0");
+    digitalWrite(RELAY_PIN,LOW);
+  }
+  else if (sensorValue == 0 && olDsensorValue == 1)
+    client.publish(TOPPROX, "1");
+    
+  olDsensorValue = sensorValue;
+}

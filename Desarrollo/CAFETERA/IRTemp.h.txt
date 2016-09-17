@@ -1,0 +1,39 @@
+#ifndef IRTEMP_h
+#define IRTEMP_h
+
+#include <inttypes.h>
+#include "application.h"
+
+typedef enum {
+  CELSIUS,
+  FAHRENHEIT
+} TempUnit;
+
+class IRTemp {
+ private:
+  byte _pinAcquire;
+  byte _pinClock;
+  byte _pinData;
+
+  float convertFahrenheit(float celsius);
+  float getTemperature(TempUnit scale, byte dataType);
+  float decodeTemperature(volatile byte data[]);
+  void  sensorEnable(bool state);
+  bool  validData(byte data[]);
+
+ public:
+  IRTemp(byte pinAcquire, byte pinClock, byte pinData);
+  float getAmbientTemperature(TempUnit scale=CELSIUS);
+  float getIRTemperature(TempUnit scale=CELSIUS);
+
+  // Deprecated calls:
+  // for compatibility with old API which used boolean for scale,
+  // recommended to use TempUnit instead
+  inline float getAmbientTemperature(bool scale) {
+    return getAmbientTemperature(scale ? FAHRENHEIT : CELSIUS);
+  }
+  inline float getIRTemperature(bool scale) {
+    return getIRTemperature(scale ? FAHRENHEIT : CELSIUS);
+  }
+};
+#endif
