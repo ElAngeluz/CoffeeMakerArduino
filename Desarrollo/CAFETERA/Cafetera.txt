@@ -19,8 +19,8 @@ static const TempUnit SCALE=CELSIUS;
 //setup mqtt
 #define Broker "m10.cloudmqtt.com"
 #define Port 18485
-#define UserName "username"
-#define Password "password"
+#define UserName "Prototipado"
+#define Password "S9i6r3pmQWME"
 
 //topic
 #define TOPESTADOCAFETERA "/onoff"
