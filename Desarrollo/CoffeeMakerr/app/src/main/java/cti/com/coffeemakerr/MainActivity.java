@@ -76,11 +76,11 @@ public class MainActivity extends AppCompatActivity {
                     }else{
                         publishMessage(_TOPCAFETERA,readyMessage);
                         txtMensaje.setText("Coffee maker is not ready, put the coffee pot if it is removed");
-                        addToHistory("Is checking. Wait please");
+                        addToHistory("Checking... Wait please");
                         swEncender.setChecked(false);
                     }
                 }else{
-                    addToHistory("You need to connected tha app to server");
+                    addToHistory("You need to connect the app to the server");
                     swEncender.setChecked(false);
                 }
             }
@@ -135,6 +135,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void SetTemperatura(MqttMessage _Message) {
         Tempera = (int)(parseDouble(_Message.toString()) + 0.5d);
+
+        if (Tempera< 18)
+            Tempera = 18;
         txtMensaje.setText("Coffee's temperature: " + Tempera + " °C");
         if (Tempera <30)
             PicCafe.setImageResource(R.drawable.frio);
@@ -169,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
         if ( Integer.parseInt(message.toString()) == 0)
         {
             cafeteraNoLista();
-            addToHistory("Coffee pot Remove");
+            addToHistory("Coffee pot removed");
             swEncender.setChecked(false);
         }
         else {
@@ -188,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void addToHistory(String mainText){
         System.out.println("LOG: " + mainText);
-        Toast.makeText(MainActivity.this, mainText, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(MainActivity.this, mainText, Toast.LENGTH_SHORT).show();
     }
 
     private void subscribeTopics() {
